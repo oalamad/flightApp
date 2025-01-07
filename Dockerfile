@@ -2,17 +2,16 @@
 # Stage 1: Build Stage
 FROM ubuntu:24.04 AS build
 RUN apt update && apt install -y \
-    maven \
     wget \
     tar
 
 # Install JDK
 RUN apt-get purge openjdk-\* -y && \
+    apt install maven -y \
     wget https://builds.openlogic.com/downloadJDK/openlogic-openjdk/17.0.13+11/openlogic-openjdk-17.0.13+11-linux-x64.tar.gz && \
     tar -xvf openlogic-openjdk-17.0.13+11-linux-x64.tar.gz && \
-    mv openlogic-openjdk-17.0.13+11-linux-x64 /usr/local/openjdk-17
-
-ENV JAVA_HOME=/usr/local/openjdk-17
+    mv openlogic-openjdk-17.0.13+11-linux-x64 /usr/lib/openjdk-17
+ENV JAVA_HOME=/usr/lib/openjdk-17
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 # Copy source code and build the application
@@ -23,8 +22,8 @@ RUN mvn clean install
 # Stage 2: Runtime Stage
 FROM ubuntu:24.04 AS runtime
 RUN apt update && apt install -y wget tar
-COPY --from=build /usr/local/openjdk-17 /usr/local/openjdk-17
-ENV JAVA_HOME=/usr/local/openjdk-17
+COPY --from=build /usr/lib/openjdk-17 /usr/lib/openjdk-17
+ENV JAVA_HOME=/usr/lib/openjdk-17
 ENV PATH=$PATH:$JAVA_HOME/bin
 # Copy the application JAR from the build stage
 WORKDIR /app
