@@ -1,19 +1,6 @@
 #Multi Stage Docker Build
 # Stage 1: Build Stage
-FROM ubuntu:24.04 AS build
-RUN apt update && apt install -y \
-    wget \
-    tar
-
-# Install JDK
-RUN apt-get purge openjdk-\* -y && \
-    apt install maven -y \
-    wget https://builds.openlogic.com/downloadJDK/openlogic-openjdk/17.0.13+11/openlogic-openjdk-17.0.13+11-linux-x64.tar.gz && \
-    tar -xvf openlogic-openjdk-17.0.13+11-linux-x64.tar.gz && \
-    mv openlogic-openjdk-17.0.13+11-linux-x64 /usr/lib/openjdk-17
-ENV JAVA_HOME=/usr/lib/openjdk-17
-ENV PATH=$PATH:$JAVA_HOME/bin
-
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.21-1.1733300809 AS build
 # Copy source code and build the application
 WORKDIR /app
 COPY ./ /app
@@ -21,10 +8,6 @@ RUN mvn clean install
 
 # Stage 2: Runtime Stage
 FROM ubuntu:24.04 AS runtime
-RUN apt update && apt install -y wget tar
-COPY --from=build /usr/lib/openjdk-17 /usr/lib/openjdk-17
-ENV JAVA_HOME=/usr/lib/openjdk-17
-ENV PATH=$PATH:$JAVA_HOME/bin
 # Copy the application JAR from the build stage
 WORKDIR /app
 COPY --from=build /app/target/fa-0.0.1-SNAPSHOT.jar app.jar
