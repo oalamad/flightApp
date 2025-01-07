@@ -7,7 +7,7 @@ COPY ./ /app
 RUN mvn clean install
 
 # Stage 2: Runtime Stage
-FROM ubuntu:24.04 AS runtime
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.21-1.1733300809 AS runtime
 # Copy the application JAR from the build stage
 WORKDIR /app
 COPY --from=build /app/target/fa-0.0.1-SNAPSHOT.jar app.jar
