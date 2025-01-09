@@ -70,7 +70,7 @@ public class SecurityConfig {
         final var authWhitelist = new String[]{
                 "/api-docs/**", "/webjars/**", "/auth/refresh_token",
                 "/auth/signin", "/auth/signup", "/swagger-ui/**",
-                "/doc/**", "/", "/index.html", "/assets/**", "/error/**"};
+                "/doc/**", "/", "/index.html", "/assets/**", "/error/**","/actuator/**"};
 
         http
                 // Enable CORS
@@ -83,7 +83,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
                 // Set permission to allow open db-console
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/db-console/**").permitAll())
+                        auth.requestMatchers("/db-console/**","/actuator/**").permitAll())
                 // This will allow frames with same origin which is much more safe
                 .headers(headers ->
                         headers.frameOptions(FrameOptionsConfig::sameOrigin).disable())

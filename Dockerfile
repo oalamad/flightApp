@@ -1,7 +1,10 @@
 #Multi Stage Docker Build
 # Stage 1: Build Stage
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.21-1.1733300809 AS build
+#FROM registry.access.redhat.com/ubi8/openjdk-21:1.21-1.1733300817 As build
 # Copy source code and build the application
+RUN yum update && \
+    yum install vim
 WORKDIR /app
 COPY ./ /app
 RUN mvn clean install
